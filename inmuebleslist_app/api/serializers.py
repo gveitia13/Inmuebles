@@ -1,36 +1,29 @@
 from rest_framework import serializers
 
-from inmuebleslist_app.models import Inmueble
+from inmuebleslist_app.models import Edificacion, Empresa
 
 
-def column_longitud(value):
-    if len(value) < 2:
-        raise serializers.ValidationError("La direction es muy corta")
+class EmpresaSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Empresa
+        fields = '__all__'
 
 
-class InmuebleSerializer(serializers.Serializer):
-    id = serializers.IntegerField(read_only=True)
-    direccion = serializers.CharField(validators=[column_longitud])
-    pais = serializers.CharField()
-    descripcion = serializers.CharField()
-    imagen = serializers.CharField()
-    active = serializers.BooleanField()
+class EdificacionSerializer(serializers.ModelSerializer):
+    longitud_direccion = serializers.SerializerMethodField()
 
-    def create(self, validated_data):
-        return Inmueble.objects.create(**validated_data)
+    class Meta:
+        model = Edificacion
+        # fields = '__all__'
+        exclude = ['id']
 
-    def update(self, instance: Inmueble, **validated_data):
-        instance.pais = validated_data.get('pais', instance.pais)
-        instance.descripcion = validated_data.get('descripcion', instance.descripcion)
-        instance.imagen = validated_data.get("imagen", instance.imagen)
-        instance.direccion = validated_data.get('direccion', instance.direccion)
-        instance.active = validated_data.get('active', instance.active)
-        instance.save()
-        return instance
+    def get_longitud_direccion(self, object):
+        cantidad_caracteres = len(object.direccion)
+        return cantidad_caracteres
 
     def validate(self, attrs):
         if attrs['direccion'] == attrs['pais']:
-            raise serializers.ValidationError("La direccion y el pais deben ser diferentes")
+            raise serializers.ValidationError("La dirección y el pais deben ser diferentes")
         else:
             return attrs
 
@@ -39,3 +32,40 @@ class InmuebleSerializer(serializers.Serializer):
             raise serializers.ValidationError("La url de la imagen es muy corta")
         else:
             return attrs
+
+# def column_longitud(value):
+#     if len(value) < 2:
+#         raise serializers.ValidationError("El valor es muy corto")
+#
+#
+# class InmuebleSerializer(serializers.Serializer):
+#     id = serializers.IntegerField(read_only=True)
+#     direccion = serializers.CharField(validators=[column_longitud])
+#     pais = serializers.CharField(validators=[column_longitud])
+#     descripcion = serializers.CharField()
+#     imagen = serializers.CharField()
+#     active = serializers.BooleanField()
+#
+#     def create(self, validated_data):
+#         return Inmueble.objects.create(**validated_data)
+#
+#     def update(self, instance: Inmueble, **validated_data):
+#         instance.pais = validated_data.get('pais', instance.pais)
+#         instance.descripcion = validated_data.get('descripcion', instance.descripcion)
+#         instance.imagen = validated_data.get("imagen", instance.imagen)
+#         instance.direccion = validated_data.get('direccion', instance.direccion)
+#         instance.active = validated_data.get('active', instance.active)
+#         instance.save()
+#         return instance
+#
+#     def validate(self, attrs):
+#         if attrs['direccion'] == attrs['pais']:
+#             raise serializers.ValidationError("La direccion y el pais deben ser diferentes")
+#         else:
+#             return attrs
+#
+#     def validate_imagen(self, attrs):
+#         if len(attrs) < 2:
+#             raise serializers.ValidationError("La url de la imagen es muy corta")
+#         else:
+#             return attrs
