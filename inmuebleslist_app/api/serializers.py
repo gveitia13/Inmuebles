@@ -3,12 +3,6 @@ from rest_framework import serializers
 from inmuebleslist_app.models import Edificacion, Empresa
 
 
-class EmpresaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Empresa
-        fields = '__all__'
-
-
 class EdificacionSerializer(serializers.ModelSerializer):
     longitud_direccion = serializers.SerializerMethodField()
 
@@ -32,6 +26,19 @@ class EdificacionSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("La url de la imagen es muy corta")
         else:
             return attrs
+
+
+class EmpresaSerializer(serializers.HyperlinkedModelSerializer):
+    edificacion_set = EdificacionSerializer(many=True, read_only=True)
+
+    # estos son para ModelSerializer
+    # edificacion_set = serializers.StringRelatedField(many=True)
+    # edificacion_set = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    # edificacion_set = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='edificacion-details')
+
+    class Meta:
+        model = Empresa
+        fields = '__all__'
 
 # def column_longitud(value):
 #     if len(value) < 2:

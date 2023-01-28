@@ -8,6 +8,7 @@ class Edificacion(models.Model):
     imagen = models.CharField(max_length=900)
     active = models.BooleanField(default=True)
     created = models.DateTimeField(auto_now_add=True)
+    empresa = models.ForeignKey('inmuebleslist_app.Empresa', on_delete=models.CASCADE)
 
     def __str__(self):
         return self.direccion

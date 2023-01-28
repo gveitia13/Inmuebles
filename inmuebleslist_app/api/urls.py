@@ -11,4 +11,5 @@ urlpatterns = [
     path('<int:pk>/', EdificacionDetails.as_view(), name='edificacion-details'),
 
     path('empresa/', EmpresaAV.as_view(), name='empresa'),
+    path('empresa/<pk>', EmpresaDetailsAV.as_view(), name='empresa-details'),
 ]
