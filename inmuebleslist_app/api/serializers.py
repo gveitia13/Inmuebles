@@ -1,10 +1,17 @@
 from rest_framework import serializers
 
-from inmuebleslist_app.models import Edificacion, Empresa
+from inmuebleslist_app.models import Edificacion, Empresa, Comentario
+
+
+class ComentarioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comentario
+        fields = '__all__'
 
 
 class EdificacionSerializer(serializers.ModelSerializer):
     longitud_direccion = serializers.SerializerMethodField()
+    comentario_set = ComentarioSerializer(many=True, read_only=True)
 
     class Meta:
         model = Edificacion
@@ -28,7 +35,7 @@ class EdificacionSerializer(serializers.ModelSerializer):
             return attrs
 
 
-class EmpresaSerializer(serializers.HyperlinkedModelSerializer):
+class EmpresaSerializer(serializers.ModelSerializer):
     edificacion_set = EdificacionSerializer(many=True, read_only=True)
 
     # estos son para ModelSerializer

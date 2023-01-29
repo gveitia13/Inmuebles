@@ -1,11 +1,11 @@
 from django.http import HttpRequest
-from rest_framework import status
+from rest_framework import status, mixins, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer
-from inmuebleslist_app.models import Edificacion, Empresa
+from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
+from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 
 
 # @api_view(['GET', 'POST'])
@@ -51,6 +51,25 @@ from inmuebleslist_app.models import Edificacion, Empresa
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
 # APIView
+class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+    queryset = Comentario.objects.all()
+    serializer_class = ComentarioSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.list(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        return self.create(request, *args, **kwargs)
+
+
+class ComentarioDetails(mixins.RetrieveModelMixin, generics.GenericAPIView):
+    queryset = Comentario.objects.all()
+    serializer_class = ComentarioSerializer
+
+    def get(self, request, *args, **kwargs):
+        return self.retrieve(request, *args, **kwargs)
+
+
 class EdificacionListAV(APIView):
     def get(self, request: HttpRequest):
         inmuebles = Edificacion.objects.all()
@@ -66,7 +85,7 @@ class EdificacionListAV(APIView):
             return Response(de_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EdificacionDetails(APIView):
+class EdificacionDetailsAV(APIView):
     def get(self, request: HttpRequest, pk):
         try:
             inmuebles = Edificacion.objects.get(pk=pk)
@@ -118,7 +137,7 @@ class EmpresaDetailsAV(APIView):
         except Empresa.DoesNotExist:
             return Response({'error': 'Empresa no encontrada', }, status=status.HTTP_404_NOT_FOUND)
         serializer = EmpresaSerializer(empresa, context={'request': request})
-        return Response(serializer.data,)
+        return Response(serializer.data, )
 
     def put(self, request, pk):
         try:
@@ -128,7 +147,7 @@ class EmpresaDetailsAV(APIView):
         serializer = EmpresaSerializer(empresa, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data,)
+            return Response(serializer.data, )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
