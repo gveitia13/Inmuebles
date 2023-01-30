@@ -1,12 +1,15 @@
 from django.http import HttpRequest
-from rest_framework import status, mixins, generics
+from rest_framework import status, mixins, generics, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
 from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 
+
+# APIView
 
 # @api_view(['GET', 'POST'])
 # def inmueble_list(request: HttpRequest):
@@ -50,24 +53,47 @@ from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 #         inmueble.delete()
 #         return Response(status=status.HTTP_204_NO_CONTENT)
 
-# APIView
-class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+class ComentarioCreate(generics.CreateAPIView):
+    serializer_class = ComentarioSerializer
+
+    def perform_create(self, serializer):
+        pk = self.kwargs.get('pk')
+        edificacion = Edificacion.objects.get(pk=pk)
+        serializer.save(edificacion=edificacion)
+        return super().perform_create(serializer)
+
+
+class ComentarioList(generics.ListCreateAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.list(request, *args, **kwargs)
-
-    def post(self, request, *args, **kwargs):
-        return self.create(request, *args, **kwargs)
+    def get_queryset(self):
+        pk = self.kwargs['pk']
+        return Comentario.objects.filter(edificacion_id=pk)
 
 
-class ComentarioDetails(mixins.RetrieveModelMixin, generics.GenericAPIView):
+class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
 
-    def get(self, request, *args, **kwargs):
-        return self.retrieve(request, *args, **kwargs)
+
+# class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
+#     queryset = Comentario.objects.all()
+#     serializer_class = ComentarioSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.list(request, *args, **kwargs)
+#
+#     def post(self, request, *args, **kwargs):
+#         return self.create(request, *args, **kwargs)
+#
+#
+# class ComentarioDetails(mixins.RetrieveModelMixin, generics.GenericAPIView):
+#     queryset = Comentario.objects.all()
+#     serializer_class = ComentarioSerializer
+#
+#     def get(self, request, *args, **kwargs):
+#         return self.retrieve(request, *args, **kwargs)
 
 
 class EdificacionListAV(APIView):
@@ -113,6 +139,51 @@ class EdificacionDetailsAV(APIView):
             return Response({'error': 'No se encuentra'}, status=status.HTTP_404_NOT_FOUND)
         inmuebles.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class EmpresaVS(viewsets.ModelViewSet):
+    queryset = Empresa.objects.all()
+    serializer_class = EmpresaSerializer
+
+
+# class EmpresaVS(viewsets.ViewSet):
+#     def list(self, request):
+#         queryset = Empresa.objects.all()
+#         serializer = EmpresaSerializer(queryset, many=True)
+#         return Response(serializer.data)
+#
+#     def retrieve(self, request, pk=None):
+#         queryset = Empresa.objects.all()
+#         edificacion_set = get_object_or_404(queryset, pk=pk)
+#         serializer = EmpresaSerializer(edificacion_set)
+#         return Response(serializer.data)
+#
+#     def create(self, request):
+#         serializer = EmpresaSerializer(data=request.data)
+#         if serializer.is_valid():
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def update(self, request, pk):
+#         try:
+#             empresa = Empresa.objects.get(pk=pk)
+#         except Empresa.DoesNotExist:
+#             return Response({'error': 'Empresa no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+#         serializer = EmpresaSerializer(empresa, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         else:
+#             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#
+#     def destroy(self, request, pk):
+#         try:
+#             empresa = Empresa.objects.get(pk=pk)
+#         except Empresa.DoesNotExist:
+#             return Response({'error': 'Empresa no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+#         empresa.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EmpresaAV(APIView):
