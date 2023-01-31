@@ -1,6 +1,8 @@
+from django.contrib.auth.models import User
 from django.http import HttpRequest
 from rest_framework import status, mixins, generics, viewsets
 from rest_framework.decorators import api_view
+from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -56,11 +58,23 @@ from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
 
+    def get_queryset(self):
+        return Comentario.objects.all()
+
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
         edificacion = Edificacion.objects.get(pk=pk)
-        serializer.save(edificacion=edificacion)
-        return super().perform_create(serializer)
+
+        if not self.request.user.is_authenticated:
+            raise ValidationError('inicie session')
+        user: User = self.request.user
+
+        comentario_queryset = Comentario.objects.filter(edificacion=edificacion, comentario_user=user)
+        if comentario_queryset.exists():
+            raise ValidationError('El user ya escribió un comentario para este inmueble')
+
+        serializer.save(edificacion=edificacion, comentario_user=user)
+        # return super().perform_create(serializer)
 
 
 class ComentarioList(generics.ListCreateAPIView):
