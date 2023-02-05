@@ -90,7 +90,7 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
-    permission_classes = [ComentarioUserOrReadOnly, ]
+    # permission_classes = [ComentarioUserOrReadOnly, ]
 
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
@@ -160,7 +160,7 @@ class EdificacionDetailsAV(APIView):
 class EmpresaVS(viewsets.ModelViewSet):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
-    permission_classes = [AdminOrReadOnly]
+    # permission_classes = [AdminOrReadOnly]
 
 
 # class EmpresaVS(viewsets.ViewSet):
