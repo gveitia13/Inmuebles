@@ -18,8 +18,8 @@ class EdificacionSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Edificacion
-        # fields = '__all__'
-        exclude = ['id']
+        fields = '__all__'
+        # exclude = ['id']
 
     def get_longitud_direccion(self, object):
         cantidad_caracteres = len(object.direccion)

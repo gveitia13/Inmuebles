@@ -65,17 +65,24 @@ class ComentarioCreate(generics.CreateAPIView):
 
     def perform_create(self, serializer):
         pk = self.kwargs.get('pk')
-        edificacion = Edificacion.objects.get(pk=pk)
+        inmueble: Edificacion = Edificacion.objects.get(pk=pk)
 
         if not self.request.user.is_authenticated:
             raise ValidationError('inicie session')
         user: User = self.request.user
 
-        comentario_queryset = Comentario.objects.filter(edificacion=edificacion, comentario_user=user)
+        comentario_queryset = Comentario.objects.filter(edificacion=inmueble, comentario_user=user)
         if comentario_queryset.exists():
             raise ValidationError('El user ya escribió un comentario para este inmueble')
 
-        serializer.save(edificacion=edificacion, comentario_user=user)
+        if inmueble.number_calification == 0:
+            inmueble.avg = serializer.validated_data['calificacion']
+        else:
+            inmueble.avg = (serializer.validated_data['calificacion'] + inmueble.avg) / 2
+
+        inmueble.number_calification += 1
+        inmueble.save()
+        serializer.save(edificacion=inmueble, comentario_user=user)
 
 
 class ComentarioList(generics.ListCreateAPIView):
@@ -90,7 +97,7 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
-    # permission_classes = [ComentarioUserOrReadOnly, ]
+    permission_classes = [ComentarioUserOrReadOnly, ]
 
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
@@ -160,7 +167,7 @@ class EdificacionDetailsAV(APIView):
 class EmpresaVS(viewsets.ModelViewSet):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
-    # permission_classes = [AdminOrReadOnly]
+    permission_classes = [AdminOrReadOnly]
 
 
 # class EmpresaVS(viewsets.ViewSet):
