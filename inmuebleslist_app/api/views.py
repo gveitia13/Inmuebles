@@ -4,9 +4,11 @@ from rest_framework import status, mixins, generics, viewsets
 from rest_framework.decorators import api_view
 from rest_framework.exceptions import ValidationError
 from rest_framework.generics import get_object_or_404
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from inmuebleslist_app.api.permissions import AdminOrReadOnly, ComentarioUserOrReadOnly
 from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
 from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 
@@ -74,7 +76,6 @@ class ComentarioCreate(generics.CreateAPIView):
             raise ValidationError('El user ya escribió un comentario para este inmueble')
 
         serializer.save(edificacion=edificacion, comentario_user=user)
-        # return super().perform_create(serializer)
 
 
 class ComentarioList(generics.ListCreateAPIView):
@@ -89,6 +90,7 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
+    permission_classes = [ComentarioUserOrReadOnly, ]
 
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
@@ -158,6 +160,7 @@ class EdificacionDetailsAV(APIView):
 class EmpresaVS(viewsets.ModelViewSet):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
+    permission_classes = [AdminOrReadOnly]
 
 
 # class EmpresaVS(viewsets.ViewSet):
