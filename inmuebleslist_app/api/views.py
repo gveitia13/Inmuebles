@@ -8,7 +8,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from inmuebleslist_app.api.permissions import AdminOrReadOnly, ComentarioUserOrReadOnly
+from inmuebleslist_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
 from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
 from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 
@@ -59,6 +59,7 @@ from inmuebleslist_app.models import Edificacion, Empresa, Comentario
 
 class ComentarioCreate(generics.CreateAPIView):
     serializer_class = ComentarioSerializer
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
         return Comentario.objects.all()
@@ -98,7 +99,7 @@ class ComentarioList(generics.ListCreateAPIView):
 class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
     queryset = Comentario.objects.all()
     serializer_class = ComentarioSerializer
-    permission_classes = [ComentarioUserOrReadOnly, ]
+    permission_classes = [IsComentarioUserOrReadOnly, ]
 
 
 # class ComentarioList(mixins.ListModelMixin, mixins.CreateModelMixin, generics.GenericAPIView):
@@ -120,7 +121,9 @@ class ComentarioDetails(generics.RetrieveUpdateDestroyAPIView):
 #         return self.retrieve(request, *args, **kwargs)
 
 
-class EdificacionListAV(APIView):
+class EdificacionAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request: HttpRequest):
         inmuebles = Edificacion.objects.all()
         serializer = EdificacionSerializer(inmuebles, many=True)
@@ -136,6 +139,8 @@ class EdificacionListAV(APIView):
 
 
 class EdificacionDetailsAV(APIView):
+    permission_classes = [IsAdminOrReadOnly]
+
     def get(self, request: HttpRequest, pk):
         try:
             inmuebles = Edificacion.objects.get(pk=pk)
@@ -168,7 +173,7 @@ class EdificacionDetailsAV(APIView):
 class EmpresaVS(viewsets.ModelViewSet):
     queryset = Empresa.objects.all()
     serializer_class = EmpresaSerializer
-    permission_classes = [AdminOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
 
 # class EmpresaVS(viewsets.ViewSet):

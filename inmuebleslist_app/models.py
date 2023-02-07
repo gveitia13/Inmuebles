@@ -23,6 +23,7 @@ class Empresa(models.Model):
     web_site = models.URLField(max_length=252)
     active = models.BooleanField(default=True)
 
+
     def __str__(self):
         return self.nombre
 

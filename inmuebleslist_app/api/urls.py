@@ -7,7 +7,7 @@ router = DefaultRouter()
 router.register('empresa', EmpresaVS, basename='empresa')
 
 urlpatterns = [
-    path('edificacion/', EdificacionListAV.as_view(), name='edificacion'),
+    path('edificacion/', EdificacionAV.as_view(), name='edificacion'),
     path('edificacion/<int:pk>/', EdificacionDetailsAV.as_view(), name='edificacion-details'),
     path('', include(router.urls)),
 
