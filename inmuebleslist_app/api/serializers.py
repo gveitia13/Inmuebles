@@ -1,3 +1,4 @@
+from django.forms import model_to_dict
 from rest_framework import serializers
 
 from inmuebleslist_app.models import Edificacion, Empresa, Comentario
@@ -15,11 +16,17 @@ class ComentarioSerializer(serializers.ModelSerializer):
 class EdificacionSerializer(serializers.ModelSerializer):
     longitud_direccion = serializers.SerializerMethodField()
     comentario_set = ComentarioSerializer(many=True, read_only=True)
+    empresa_obj = serializers.SerializerMethodField()
+    empresa_nombre = serializers.CharField(source='empresa.nombre')
 
     class Meta:
         model = Edificacion
         fields = '__all__'
         # exclude = ['id']
+
+    def get_empresa_obj(self, object):
+        empresa: Empresa = object.empresa
+        return model_to_dict(empresa)
 
     def get_longitud_direccion(self, object):
         cantidad_caracteres = len(object.direccion)
