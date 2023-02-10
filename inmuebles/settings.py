@@ -137,7 +137,9 @@ REST_FRAMEWORK = {
         'comentario-create': '10000/day',
         'comentario-list': '10000/day',
         'comentario-details': '10000/day',
-    }
+    },
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    # 'PAGE_SIZE': 1,
 }
 
 SIMPLE_JWT = {

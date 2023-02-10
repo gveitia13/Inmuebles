@@ -8,6 +8,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import AnonRateThrottle, UserRateThrottle, ScopedRateThrottle
 from rest_framework.views import APIView
 
+from inmuebleslist_app.api.pagination import EdificacionPaginator, EdificacionLOPagination
 from inmuebleslist_app.api.permissions import IsAdminOrReadOnly, IsComentarioUserOrReadOnly
 from inmuebleslist_app.api.serializers import EdificacionSerializer, EmpresaSerializer, ComentarioSerializer
 from inmuebleslist_app.api.throttling import ComentarioCreateThrottling, ComentarioListThrottling
@@ -142,6 +143,7 @@ class EdificacionList(generics.ListAPIView):
     serializer_class = EdificacionSerializer
     filter_backends = [filters.SearchFilter, filters.OrderingFilter]
     search_fields = ['direccion', 'empresa__nombre']
+    pagination_class = EdificacionPaginator,  # EdificacionLOPagination,
 
 
 class EdificacionAV(APIView):
