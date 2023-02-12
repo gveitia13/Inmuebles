@@ -27,7 +27,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY', default='django-insecure-ki@09a16+b2o@
 DEBUG = True
 # DEBUG = 'RENDER' not in os.environ
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 # https://docs.djangoproject.com/en/3.0/ref/settings/#allowed-hosts
 
 RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
@@ -102,10 +102,21 @@ DATABASES = {
 #         'HOST': 'localhost'
 #     }
 # }
-
 # DATABASES = {
-#     'default': dj_database_url.config(default='postgresql://postgres:postgres@localhost:5432/inmuebles',
-#                                       conn_max_age=600)
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'USER': 'star',
+#         'NAME': 'postgresql_ew74',
+#         'PASSWORD': '9GWrIQXVbL1pA3tqEIR9jIBEd6J8NZ8X',
+#         'HOST': 'https://dpg-cfk8ntha6gductlt0gi0-a.oregon-postgres.render.com/postgresql_ew74'
+#     }
+# }
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         # Feel free to alter this value to suit your needs.
+#         default='postgres://star:9GWrIQXVbL1pA3tqEIR9jIBEd6J8NZ8X@dpg-cfk8ntha6gductlt0gi0-a.oregon-postgres.render.com/postgresql_ew74',
+#         conn_max_age=600
+#     )
 # }
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
