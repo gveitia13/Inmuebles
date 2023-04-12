@@ -11,7 +11,6 @@ urlpatterns = [
     path('edificacion/list/', EdificacionList.as_view(), name='edificacion-list'),
     path('edificacion/<int:pk>/', EdificacionDetailsAV.as_view(), name='edificacion-details'),
     path('', include(router.urls)),
-
     # path('empresa/', EmpresaAV.as_view(), name='empresa'),
     # path('empresa/<pk>', EmpresaDetailsAV.as_view(), name='empresa-details'),
 
